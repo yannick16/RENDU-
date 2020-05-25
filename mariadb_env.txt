@@ -1,0 +1,3 @@
+ALLOW_EMPTY_PASSWORD=yes
+MARIADB_USER=bn_prestashop
+MARIADB_DATABASE=bitnami_prestashop

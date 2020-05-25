@@ -1,0 +1,56 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+        name: prestashop-example-secret-configmap
+spec: 
+  replicas: 1
+  selector:
+       matchLabels:
+               app: prestashop
+  template:
+       metadata:
+             labels:
+                app: prestashop
+       spec:
+         volumes: 
+           - name: prestashop-data
+             persistentVolumeClaim:
+                     claimName: presta-pv-claim
+         containers:
+                 - name: prestashop
+                   image: bitnami/prestashop:latest 
+                   volumeMounts:
+                          - mountPath: /bitnami
+                            name: prestashop-data
+                   ports:
+                       - containerPort: 80
+                       - containerPort: 443
+                   env:
+                      - name: PRESTASHOP_FIRST_NAME
+                        valueFrom:
+                                configMapKeyRef:
+                                        name: site-info
+                                        key: prestashop_first_name
+
+                      - name: PRESTASHOP_LAST_NAME
+                        valueFrom:
+                                configMapKeyRef:
+                                        name: site-info
+                                        key: prestashop_last_name
+                      - name: ALLOW_EMPTY_PASSWORD
+                        valueFrom:
+                               secretKeyRef:
+                                       name: presta-env
+                                       key: ALLOW_EMPTY_PASSWORD
+
+                      - name: PRETASHOP_DATABASE_USER
+                        valueFrom:
+                               secretKeyRef:
+                                       name: presta-env
+                                       key: PRESTASHOP_DATABASE_USER
+
+                      - name: PRETASHOP_DATABASE_NAME
+                        valueFrom:
+                               secretKeyRef:
+                                       name: presta-env
+                                       key: PRESTASHOP_DATABASE_NAME
